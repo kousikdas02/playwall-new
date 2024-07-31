@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, List, ListItem, TextField, Typography } from '@mui/material'
+import { Box, Button, Checkbox, Container, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, FormControlLabel, Grid, List, ListItem, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import CheckBoxCheckedIcon from "../../assets/icons/CheckBoxCheckedIcon";
@@ -6,8 +6,6 @@ import CheckBoxDefaultIcon from '../../assets/icons/CheckBoxDefaultIcon';
 import leftImg from "../../assets/images/left-img.png";
 import leftImgMobile from "../../assets/images/left-img-mobile.png";
 import logo from "../../assets/images/logo.png";
-
-
 import { HomeWrapperStyled } from '../../styledComponents/HomeWrapperStyled';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -57,11 +55,15 @@ const Home = () => {
     };
 
 
-    const [formData, setFormData] = useState({ email: '' });
+    const [formData, setFormData] = useState({ firstName: '', email: '' });
     const [formSubmitted, setFormSubmitted] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
     const handleChange = (e) => {
-        setFormData({ email: e.target.value });
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
     };
     // validate email
     const validateEmail = (email) => {
@@ -74,9 +76,8 @@ const Home = () => {
     //Form Submit
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!checkBox) {
-            console.log(checkBox)
-            toast.error('Please check the checkbox to submit.', {
+        if (!formData.firstName) {
+            toast.error('Please enter your first name.', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -101,19 +102,42 @@ const Home = () => {
             });
             return;
         }
+        let boxChecked = false;
+        for (const [key, value] of Object.entries(checkBox)) {
+            if (value === true) {
+                boxChecked = true;
+                console.log(key);
+                break;
+            }
+        }
+        if (!boxChecked) {
+            toast.error('Please check at least one checkbox to submit.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            return;
+        }
         setShowLoader(true);
         const data = new FormData();
+        data.append('firstName', formData.firstName);
         data.append('email', formData.email);
-        data.append('createdAt', moment().format('MMMM Do YYYY, h:mm:ss a'));
-        const Sheet_Url = 'https://script.google.com/macros/s/AKfycby5k415kEPVb99ZdSIhbC7X5fXXPPnZ7UaSqcLDYlrEP5vnHLtkhGT5mONv3keOoAG9/exec';
+        data.append('submittedAt', moment().format('MMMM Do YYYY, h:mm:ss a'));
+        data.append('receiveUpdates', checkBox.update);
+        data.append('partnerships', checkBox.partnership);
+        data.append('demo', checkBox.demo);
+        data.append('upcomingEvent', checkBox.event);
+        const Sheet_Url = 'https://script.google.com/macros/s/AKfycbypFj3-58ztshhIGV_Xae9CLdjJWcF0sa9FC15hmsDslB0MEG_7yU2LhUqLVTTyPqiP3g/exec';
         try {
             await fetch(Sheet_Url, {
                 method: 'POST',
                 body: data,
                 muteHttpExceptions: true,
-            });
-            setFormData({
-                email: 'SENT!',
             });
             setFormSubmitted(true);
             setShowLoader(false);
@@ -134,16 +158,22 @@ const Home = () => {
     };
     const handleLogoClick = () => {
         setFormData({
+            firstName: '',
             email: '',
         });
         handleBlurEmail();
         handleBlurFirstName();
         setFormSubmitted(false);
-        setCheckBox(false);
+        setCheckBox({ update: false, partnership: false, demo: false, event: false });
+        console.log(checkBox)
     }
-    const [checkBox, setCheckBox] = useState(false);
+    const [checkBox, setCheckBox] = useState({ update: false, partnership: false, demo: false, event: false });
     const handleCheckBoxChange = (e) => {
-        setCheckBox(e.target.checked);
+        const { name, checked } = e.target;
+        setCheckBox((prevData) => ({
+            ...prevData,
+            [name]: checked,
+        }));
     }
     return (
         <HomeWrapperStyled>
@@ -160,10 +190,10 @@ const Home = () => {
                         </Container>
                     </Box>
                     <Box className='imageColumn_Mobile' sx={{ display: { xs: 'block', md: 'none' } }}>
-                                        <figure>
-                                            <img src={leftImgMobile} alt="" />
-                                        </figure>
-                                    </Box>
+                        <figure>
+                            <img src={leftImgMobile} alt="" />
+                        </figure>
+                    </Box>
                     <Container maxWidth={false}>
                         <Grid container rowSpacing={2.5} columnSpacing={4} >
                             <Grid item xs={12} md={6} lg={6.8} sx={{ display: { md: 'block', xs: 'none' } }}>
@@ -181,7 +211,7 @@ const Home = () => {
                                         </Link>
                                     </Box>
 
-                                    
+
 
                                     <Box className="homeMainConent_heading">
 
@@ -197,12 +227,11 @@ const Home = () => {
                                             <Box className="homeFormInputWrap">
 
                                                 <Box className="homeFormInput">
-                                                    <TextField disabled={showLoader} onFocus={handleOnFocusFirstName} onBlur={handleBlurFirstName} inputProps={{ readOnly: formSubmitted }} fullWidth placeholder='FIRST NAME' variant="outlined" value={formData.email} onChange={handleChange} className={`${formSubmitted === true ? "formSubmitted" : ""} ${isFocusedFirstName === true ? "focused" : ""}`} />
-
+                                                    <TextField disabled={showLoader} onFocus={handleOnFocusFirstName} onBlur={handleBlurFirstName} inputProps={{ readOnly: formSubmitted }} fullWidth placeholder='FIRST NAME' name="firstName" variant="outlined" value={formData.firstName} onChange={handleChange} className={`${formSubmitted === true ? "formSubmitted" : ""} ${isFocusedFirstName === true ? "focused" : ""}`} />
 
                                                 </Box>
                                                 <Box className="homeFormInput">
-                                                    <TextField disabled={showLoader} onFocus={handleOnFocusEmail} onBlur={handleBlurEmail} inputProps={{ readOnly: formSubmitted }} fullWidth placeholder='EMAIL ADDRESS' variant="outlined" value={formData.email} onChange={handleChange} className={`${formSubmitted === true ? "formSubmitted" : ""} ${isFocusedEmail === true ? "focused" : ""}`} />
+                                                    <TextField disabled={showLoader} onFocus={handleOnFocusEmail} onBlur={handleBlurEmail} inputProps={{ readOnly: formSubmitted }} fullWidth placeholder='EMAIL ADDRESS' name="email" variant="outlined" value={formData.email} onChange={handleChange} className={`${formSubmitted === true ? "formSubmitted" : ""} ${isFocusedEmail === true ? "focused" : ""}`} />
                                                 </Box>
                                             </Box>
 
@@ -212,27 +241,30 @@ const Home = () => {
                                                 </Typography>
 
                                                 <Box className="checboxWrapper">
-                                                    <FormControlLabel className='checkBoxFormControl' onChange={handleCheckBoxChange} control={<Checkbox icon={<CheckBoxDefaultIcon />} checkedIcon={<CheckBoxCheckedIcon />} />} label="I want to keep hearing about the PlayWall and receive updates" />
-                                                    <FormControlLabel className='checkBoxFormControl' onChange={handleCheckBoxChange} control={<Checkbox icon={<CheckBoxDefaultIcon />} checkedIcon={<CheckBoxCheckedIcon />} />} label="I'm interested in developing/reselling partnerships" />
-                                                    <FormControlLabel className='checkBoxFormControl' onChange={handleCheckBoxChange} control={<Checkbox icon={<CheckBoxDefaultIcon />} checkedIcon={<CheckBoxCheckedIcon />} />} label="I would like to see a demo and/or buy PlayWall" />
-                                                    <FormControlLabel className='checkBoxFormControl' onChange={handleCheckBoxChange} control={<Checkbox icon={<CheckBoxDefaultIcon />} checkedIcon={<CheckBoxCheckedIcon />} />} label="I am interested in using it for my upcoming event" />
+                                                    <FormControlLabel className='checkBoxFormControl' control={<Checkbox icon={<CheckBoxDefaultIcon />} checkedIcon={<CheckBoxCheckedIcon />} checked={checkBox.update} name="update" onChange={handleCheckBoxChange} />} label="I want to keep hearing about the PlayWall and receive updates" />
+                                                    <FormControlLabel className='checkBoxFormControl' control={<Checkbox icon={<CheckBoxDefaultIcon />} checkedIcon={<CheckBoxCheckedIcon />} checked={checkBox.partnership} name="partnership" onChange={handleCheckBoxChange} />} label="I'm interested in developing/reselling partnerships" />
+                                                    <FormControlLabel className='checkBoxFormControl' control={<Checkbox icon={<CheckBoxDefaultIcon />} checkedIcon={<CheckBoxCheckedIcon />} checked={checkBox.demo} name="demo" onChange={handleCheckBoxChange} />} label="I would like to see a demo and/or buy PlayWall" />
+                                                    <FormControlLabel className='checkBoxFormControl' control={<Checkbox icon={<CheckBoxDefaultIcon />} checkedIcon={<CheckBoxCheckedIcon />} checked={checkBox.event} name="event" onChange={handleCheckBoxChange} />} label="I am interested in using it for my upcoming event" />
 
                                                 </Box>
 
                                                 <Box className="formSubmitBtnWrap">
-
-                                                    {/* <Button className="formSubmittedBtn formSubmitBtnCommon" disabled>
-                                                    <CircularProgress style={{ color: "#000" }} size={23} />
-                                                </Button> */}
-
-
-                                                    <Button type='submit' className='formSubmitBtnCommon'>
-                                                        SIGN UP
-                                                    </Button>
-
-                                                    {/* <Button className="formSubmittedBtn formSubmitBtnCommon" disabled>
-                                                    SENT !
-                                                </Button> */}
+                                                    {
+                                                        showLoader ?
+                                                            <Button className="formSubmittedBtn formSubmitBtnCommon" disabled>
+                                                                <CircularProgress style={{ color: "#000" }} size={23} />
+                                                            </Button>
+                                                            :
+                                                            (formSubmitted ?
+                                                                <Button className="formSubmittedBtn formSubmitBtnCommon" disabled>
+                                                                    SENT !
+                                                                </Button>
+                                                                :
+                                                                <Button type='submit' className='formSubmitBtnCommon'>
+                                                                    SIGN UP
+                                                                </Button>
+                                                            )
+                                                    }
                                                 </Box>
                                             </Box>
 
