@@ -96,11 +96,15 @@ export const HomeWrapperStyled = styled(Box)`
                     margin-bottom: 0;
                 }
                 
-               
+                .Mui-disabled{
+                    color: #fff !important;
+                    background-color: #000000 !important;
+                }
                 .formSubmitted{
                    input{
                     color:#fff !important;
                     background-color: #000000 !important;
+                    border-color: #767676 !important;
                    }
                 }
                 .focused{
