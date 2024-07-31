@@ -135,7 +135,7 @@ export const HomeWrapperStyled = styled(Box)`
             
         }
         .checboxWrapper {
-            max-width: 593px;
+            max-width: 583px;
             margin-left:  auto;
             margin-bottom: 52px;
 
@@ -373,7 +373,7 @@ export const HomeWrapperStyled = styled(Box)`
     }
 
     .formSubmitBtnWrap{
-        max-width: 593px;
+        max-width: 583px;
         margin-left: auto;
 
         @media ( max-width: 899px) {
@@ -404,7 +404,7 @@ export const HomeWrapperStyled = styled(Box)`
         }
     }
     .homeFormBotrap{
-        padding-left: 15px;
+        padding-left: 35px;
         padding-bottom: 60px;
 
         @media (max-width: 899px) {
