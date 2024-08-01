@@ -196,14 +196,11 @@ export const HomeWrapperStyled = styled(Box)`
                     color: #FFFFFF;
                     line-height: 1.5;
                     letter-spacing: 0.02em;
-                    /* padding-top: 2px; */
-                    /* text-align: justify; */
-                   
+                    
     
                     @media (max-width: 599px) {
                         font-size: 14px;
-                        /* line-height: 1.2; */
-    
+                        
                     }
     
                     
@@ -251,8 +248,7 @@ export const HomeWrapperStyled = styled(Box)`
         min-height: 100vh;
         .homeMain {
             padding-top: 74px;
-            
-            /* padding-bottom: 100px; */
+           
             @media (max-width: 899px) {
                 padding-bottom: 0;
                 padding-top: 23px;
@@ -319,7 +315,6 @@ export const HomeWrapperStyled = styled(Box)`
             
         }
         .desktopLogoWrap{
-            /* display: flex; */
             justify-content: center;
             margin-bottom: 28px;
             @media (max-width: 1399px) {
@@ -338,7 +333,7 @@ export const HomeWrapperStyled = styled(Box)`
             margin-top: -20px;
             figure{
                 display: flex;
-                /* justify-content: flex-end; */
+                
                 img{
                     width: 100%;
 

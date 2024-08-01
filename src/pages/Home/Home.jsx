@@ -132,7 +132,6 @@ const Home = () => {
         data.append('partnerships', checkBox.partnership);
         data.append('demo', checkBox.demo);
         data.append('upcomingEvent', checkBox.event);
-        // const Sheet_Url = 'https://script.google.com/macros/s/AKfycbypFj3-58ztshhIGV_Xae9CLdjJWcF0sa9FC15hmsDslB0MEG_7yU2LhUqLVTTyPqiP3g/exec';
         const Sheet_Url = 'https://script.google.com/macros/s/AKfycbzncOLtYOL3_l9U2POVbhxCAJ38LFLrsAjUknfK6EM478EgleojuPEw11ODHMcZgutE/exec';
         try {
             await fetch(Sheet_Url, {
